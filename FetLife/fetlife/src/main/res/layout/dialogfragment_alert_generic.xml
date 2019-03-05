@@ -17,16 +17,25 @@
         android:singleLine="true"
         android:textAlignment="viewStart" />
 
-    <TextView
-        android:id="@+id/dialogMessage"
-        style="@style/DialogMessage"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/dialogTitle"
         android:layout_marginTop="10dp"
         android:gravity="start"
-        android:textAlignment="viewStart" />
+        >
+
+        <TextView
+            android:id="@+id/dialogMessage"
+            style="@style/DialogMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true"
+            android:textAlignment="viewStart" />
+
+    </ScrollView>
+
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/dialogInputLayout"

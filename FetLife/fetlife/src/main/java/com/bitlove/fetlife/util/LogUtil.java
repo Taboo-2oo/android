@@ -5,9 +5,12 @@ import com.bitlove.fetlife.FetLifeApplication;
 import com.crashlytics.android.Crashlytics;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 public class LogUtil {
+
+    private static final int MAX_LOG_LENGTH = 20000;
 
     public static void writeLog(String message) {
 
@@ -15,15 +18,42 @@ public class LogUtil {
             return;
         }
 
+        String currentLog = readLogs();
+
         try {
+            currentLog = currentLog.substring(0,Math.min(currentLog.length() +1, MAX_LOG_LENGTH));
             File file = new File(FetLifeApplication.getInstance().getExternalFilesDir(null),"extra.log");
             if (!file.exists()) file.createNewFile();
-            FileOutputStream fos = new FileOutputStream(file,true);
+            FileOutputStream fos = new FileOutputStream(file,false);
             String log = DateUtil.toServerString(System.currentTimeMillis()) + " - " + message + "\n";
-            fos.write(log.getBytes());
+            fos.write((log + "\n" + currentLog).getBytes());
             fos.close();
         } catch (Throwable t) {
             Crashlytics.logException(new Exception("Extra log exception"));
         }
+    }
+
+    public static String readLogs() {
+
+        if (!BuildConfig.DEBUG) {
+            return "No Logs Available in Production Mode";
+        }
+
+        FileInputStream fis = null;
+        try {
+            String result = "";
+            File file = new File(FetLifeApplication.getInstance().getExternalFilesDir(null),"extra.log");
+            if (!file.exists()) return "No logs available";
+            fis = new FileInputStream(file);
+            while (fis.available() > 0) {
+                result = result + String.valueOf((char) fis.read());
+            }
+            fis.close();
+            return result;
+        } catch (Throwable t) {
+            return "Log read failed with exception";
+        }
+
+
     }
 }

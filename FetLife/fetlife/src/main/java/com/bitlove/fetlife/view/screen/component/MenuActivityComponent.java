@@ -1,9 +1,14 @@
 package com.bitlove.fetlife.view.screen.component;
 
 import android.Manifest;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,6 +18,8 @@ import android.widget.TextView;
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.model.pojos.fetlife.dbjson.Member;
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
+import com.bitlove.fetlife.util.LogUtil;
+import com.bitlove.fetlife.view.dialog.MessageDialog;
 import com.bitlove.fetlife.view.dialog.PictureUploadSelectionDialog;
 import com.bitlove.fetlife.view.dialog.VideoUploadSelectionDialog;
 import com.bitlove.fetlife.view.screen.BaseActivity;
@@ -156,7 +163,7 @@ public class MenuActivityComponent extends ActivityComponent {
     }
 
     @Override
-    public Boolean onActivityNavigationItemSelected(BaseActivity baseActivity, MenuItem item) {
+    public Boolean onActivityNavigationItemSelected(final BaseActivity baseActivity, MenuItem item) {
 
         menuActivity.setFinishAfterNavigation(false);
         DrawerLayout drawer = (DrawerLayout) menuActivity.findViewById(R.id.drawer_layout);
@@ -286,6 +293,23 @@ public class MenuActivityComponent extends ActivityComponent {
 //            pendingNavigationIntent = TurboLinksViewActivity.createIntent(menuActivity,"wallpapers",menuActivity.getString(R.string.title_activity_wallpapers), true, null,false);
             pendingNavigationIntent = FetLifeWebViewActivity.Companion.createIntent(menuActivity, WebAppNavigation.WEBAPP_BASE_URL + "/wallpapers", true,null,false);
             menuActivity.setFinishAfterNavigation(true);
+        } else if (id == R.id.nav_extra_logs) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    final String logs = LogUtil.readLogs();
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            ClipboardManager clipboard = (ClipboardManager) baseActivity.getSystemService(Context.CLIPBOARD_SERVICE);
+                            ClipData clip = ClipData.newPlainText("FetLife logs", logs);
+                            clipboard.setPrimaryClip(clip);
+                            baseActivity.showToast("Logs copied to clipboard");
+                            MessageDialog.show(baseActivity,"Extra Logs",logs);
+                        }
+                    });
+                }
+            }).start();
         } else if (id == R.id.nav_updates) {
             logEvent("nav_updates");
             menuActivity.showToast(menuActivity.getString(R.string.message_toast_checking_for_updates));

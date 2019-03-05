@@ -10,9 +10,9 @@ import java.io.FileOutputStream;
 
 public class LogUtil {
 
-    private static final int MAX_LOG_LENGTH = 20000;
+    private static final int MAX_LOG_LENGTH = 10000;
 
-    public static void writeLog(String message) {
+    public static synchronized void writeLog(String message) {
 
         if (!BuildConfig.DEBUG) {
             return;
@@ -21,7 +21,9 @@ public class LogUtil {
         String currentLog = readLogs();
 
         try {
-            currentLog = currentLog.substring(0,Math.min(currentLog.length() +1, MAX_LOG_LENGTH));
+            if (!currentLog.isEmpty()) {
+                currentLog = currentLog.substring(0,Math.min(currentLog.length(), MAX_LOG_LENGTH));
+            }
             File file = new File(FetLifeApplication.getInstance().getExternalFilesDir(null),"extra.log");
             if (!file.exists()) file.createNewFile();
             FileOutputStream fos = new FileOutputStream(file,false);

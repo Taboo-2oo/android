@@ -83,6 +83,7 @@ class FetLifeWebViewFragment : Fragment() {
                 override fun onPageFinished(webView: WebView?, url: String?) {
                     if (BuildConfig.DEBUG) {
                         LogUtil.writeLog("[WEBVIEW] onPageFinished: $url")
+                        LogUtil.writeLog("[COOKIES] " + CookieManager.getInstance().getCookie(url));
                     }
                     //web_view_progress_bar.visibility = View.GONE
                     dismissProgress()
@@ -156,6 +157,14 @@ class FetLifeWebViewFragment : Fragment() {
                     super.onPageStarted(webView, url, favicon)
                     showProgress()
                 }
+
+                override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? {
+                    if (BuildConfig.DEBUG) {
+                        LogUtil.writeLog("[WEBVIEW] request: ${request?.url} ${request?.requestHeaders}")
+                    }
+                    return super.shouldInterceptRequest(view, request)
+                }
+
             }
 
             val headers = HashMap<String,String>()

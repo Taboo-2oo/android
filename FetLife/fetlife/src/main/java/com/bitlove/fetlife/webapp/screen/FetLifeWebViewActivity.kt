@@ -7,8 +7,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MenuItem
+import com.bitlove.fetlife.BuildConfig
 import com.bitlove.fetlife.FetLifeApplication
 import com.bitlove.fetlife.R
+import com.bitlove.fetlife.util.LogUtil
 import com.bitlove.fetlife.view.screen.BaseActivity
 import com.bitlove.fetlife.view.screen.component.MenuActivityComponent
 import com.bitlove.fetlife.webapp.kotlin.getBooleanExtra
@@ -58,6 +60,10 @@ class FetLifeWebViewActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        setContentView(R.layout.webapp_activity_webview)
+
+        if (BuildConfig.DEBUG) {
+            LogUtil.writeLog("[APP] WebView Activity - onCreate")
+        }
 
         if (savedInstanceState == null) {
             supportFragmentManager

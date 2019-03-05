@@ -17,6 +17,7 @@ import com.bitlove.fetlife.event.ServiceCallFinishedEvent
 import com.bitlove.fetlife.event.ServiceCallStartedEvent
 import com.bitlove.fetlife.model.api.FetLifeService
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService
+import com.bitlove.fetlife.util.LogUtil
 import com.bitlove.fetlife.util.ServerIdUtil
 import com.bitlove.fetlife.webapp.communication.WebViewInterface
 import com.bitlove.fetlife.webapp.kotlin.getBooleanArgument
@@ -48,6 +49,10 @@ class FetLifeWebViewFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        if (BuildConfig.DEBUG) {
+            LogUtil.writeLog("[APP] WebView Fragment - onCreateView: " + getStringArgument(ARG_PAGE_URL))
+        }
+
         return inflater.inflate(R.layout.webapp_fragment_webview,container,false).apply {
             val url = getStringArgument(ARG_PAGE_URL)
             val navigationTitleId = FetLifeApplication.getInstance().webAppNavigation.getTitle(url)
@@ -68,13 +73,17 @@ class FetLifeWebViewFragment : Fragment() {
             web_view.webChromeClient = object : WebChromeClient() {
                 override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
                     if (BuildConfig.DEBUG) {
-                        Log.d("[WEBVIEW][CONSOLE]",consoleMessage?.toString())
+                        //Log.d("[WEBVIEW][CONSOLE]",consoleMessage?.toString())
+                        LogUtil.writeLog("[CONSOLE] $consoleMessage")
                     }
                     return super.onConsoleMessage(consoleMessage)
                 }
             }
             web_view.webViewClient = object : WebViewClient() {
                 override fun onPageFinished(webView: WebView?, url: String?) {
+                    if (BuildConfig.DEBUG) {
+                        LogUtil.writeLog("[WEBVIEW] onPageFinished: $url")
+                    }
                     //web_view_progress_bar.visibility = View.GONE
                     dismissProgress()
                     val navigationTitleId = FetLifeApplication.getInstance().webAppNavigation.getTitle(url)
@@ -125,6 +134,9 @@ class FetLifeWebViewFragment : Fragment() {
                 }
 
                 override fun onReceivedError(webView: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+                    if (BuildConfig.DEBUG) {
+                        LogUtil.writeLog("[WEBVIEW] onReceivedError: ${error?.errorCode} ${error?.description}")
+                    }
                     super.onReceivedError(webView, request, error)
                     dismissProgress()
                     if (activity?.isFinishing != true) {
@@ -138,6 +150,9 @@ class FetLifeWebViewFragment : Fragment() {
                 }
 
                 override fun onPageStarted(webView: WebView?, url: String?, favicon: Bitmap?) {
+                    if (BuildConfig.DEBUG) {
+                        LogUtil.writeLog("[WEBVIEW] onPageStarted: $url")
+                    }
                     super.onPageStarted(webView, url, favicon)
                     showProgress()
                 }
@@ -226,9 +241,15 @@ class FetLifeWebViewFragment : Fragment() {
 
     fun onKeyBack() : Boolean{
         return if (web_view.canGoBack()) {
+            if (BuildConfig.DEBUG) {
+                LogUtil.writeLog("[APP] onKeyBack: goingBack")
+            }
             web_view.goBack()
             true
         } else {
+            if (BuildConfig.DEBUG) {
+                LogUtil.writeLog("[APP] onKeyBack: closing")
+            }
             false
         }
 

@@ -7,11 +7,13 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.webkit.WebView
 import androidx.browser.customtabs.CustomTabsIntent
+import com.bitlove.fetlife.BuildConfig
 import com.bitlove.fetlife.FetLifeApplication
 import com.bitlove.fetlife.R
 import com.bitlove.fetlife.model.pojos.fetlife.dbjson.*
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService
 import com.bitlove.fetlife.util.ColorUtil
+import com.bitlove.fetlife.util.LogUtil
 import com.bitlove.fetlife.util.PictureUtil
 import com.bitlove.fetlife.util.UrlUtil
 import com.bitlove.fetlife.view.screen.BaseActivity
@@ -258,28 +260,46 @@ class WebAppNavigation {
 
         if (!isFetLifeLink(targetUri)) {
             targetUri.openInBrowser()
+            if (BuildConfig.DEBUG) {
+                LogUtil.writeLog("[APP] overriding Url Load: Opening in Browser")
+            }
             return true
         }
 
         if (isDownloadLink(targetUri)) {
             openInCustomTab(targetUri,context)
+            if (BuildConfig.DEBUG) {
+                LogUtil.writeLog("[APP] overriding Url Load: Opening in Custom Chrome Tab")
+            }
             return true
         }
 
         if (handleNativeSupportedLink(targetUri, currentUrl, context)) {
+            if (BuildConfig.DEBUG) {
+                LogUtil.writeLog("[APP] overriding Url Load: Opening Native Screen")
+            }
             return true
         }
 
         if (isParent(targetUri,webView)) {
             if (webView.canGoBack()) {
+                if (BuildConfig.DEBUG) {
+                    LogUtil.writeLog("[APP] overriding Url Load: Navigating Back")
+                }
                 webView.goBack()
             } else {
+                if (BuildConfig.DEBUG) {
+                    LogUtil.writeLog("[APP] overriding Url Load: Closing Screen")
+                }
                 activity?.finish()
             }
             return true
         }
 
         if (openAsNewWebViewFlow(targetUri, currentUrl)) {
+            if (BuildConfig.DEBUG) {
+                LogUtil.writeLog("[APP] overriding Url Load: Opening in new WebView Screen")
+            }
             FetLifeWebViewActivity.startActivity(webView.context, targetUri.toString(), false, null, false, null)
             return true
         }
@@ -289,10 +309,16 @@ class WebAppNavigation {
             //TODO(WEBAPP): keep track own back track list, add or not to history
             webView.clearHistory()
             webView.tag = true
+            if (BuildConfig.DEBUG) {
+                LogUtil.writeLog("[APP] clearing broswser history after navigation")
+            }
             return false
         }
 
         if (openInPlace(targetUri)) {
+            if (BuildConfig.DEBUG) {
+                LogUtil.writeLog("[APP] opening link in place")
+            }
             return false
         }
 

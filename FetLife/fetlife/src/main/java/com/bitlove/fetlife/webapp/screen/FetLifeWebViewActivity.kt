@@ -110,5 +110,13 @@ class FetLifeWebViewActivity : BaseActivity() {
         return (supportFragmentManager.fragments.getOrNull(0) as? FetLifeWebViewFragment)?.getCurrentUrl()
     }
 
+    override fun onStop() {
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
 
 }

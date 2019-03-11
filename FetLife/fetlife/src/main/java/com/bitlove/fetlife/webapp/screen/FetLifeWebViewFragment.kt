@@ -241,4 +241,8 @@ class FetLifeWebViewFragment : Fragment() {
         return FetLifeApplication.getInstance().webAppNavigation.getFabLink(getStringArgument(ARG_PAGE_URL))
     }
 
+    fun getCurrentUrl(): String? {
+        return web_view?.url
+    }
+
 }

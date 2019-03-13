@@ -18,6 +18,7 @@ import com.bitlove.fetlife.event.ServiceCallStartedEvent
 import com.bitlove.fetlife.model.api.FetLifeService
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService
 import com.bitlove.fetlife.util.ServerIdUtil
+import com.bitlove.fetlife.util.VersionUtil
 import com.bitlove.fetlife.webapp.communication.WebViewInterface
 import com.bitlove.fetlife.webapp.kotlin.getBooleanArgument
 import com.bitlove.fetlife.webapp.kotlin.getStringArgument
@@ -150,6 +151,7 @@ class FetLifeWebViewFragment : Fragment() {
                 headers.put("Authorization", authHeader)
             }
             headers.put("X-Fetlife-Webview", "1")
+            headers.put("X-Fetlife-Android", VersionUtil.getCurrentVersionInt(context).toString())
             web_view.loadUrl(url,headers)
             url?.let {
                 FetLifeApplication.getInstance().actionCable.tryConnect(context,url)

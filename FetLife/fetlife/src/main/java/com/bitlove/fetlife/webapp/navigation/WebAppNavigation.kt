@@ -30,7 +30,7 @@ class WebAppNavigation {
 
         private var totalTimeSpent : Long = 0
 
-        const val WEBAPP_BASE_URL = "https://staging.fetlife.com"
+        const val WEBAPP_BASE_URL = "https://fetlife.com"
 
         //Base constants
         internal const val WEB_TITLE_SEPARATOR = " |"
